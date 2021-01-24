@@ -46,59 +46,23 @@ def my_padding(img, shape, boundary = 0):
 
 
 def my_getGKernel(shape, sigma):
-    '''
-    :param shape: 생성하고자 하는 gaussian kernel의 shape입니다. (5,5) (1,5) 형태로 입력받습니다.
-    :param sigma: Gaussian 분포에 사용될 표준편차입니다. shape가 커지면 sigma도 커지는게 좋습니다.
-    :return: shape 형태의 Gaussian kernel
-    '''
+    m, n = shape[0] // 2, shape[1] // 2
+    y, x = np.ogrid[-m:m + 1, -n:n + 1] # y = [-m,-m+1, ..., m-1, m].T , x = [-n, -n+1, ..., n-1, n]
+    #계수는 정규화 과정에서 사라짐.
+    gaus = np.exp(-(x * x + y * y) / (2. * sigma * sigma))  # 뒤집으면 X Y가 동일
+    sumgaus = gaus.sum()
+    if sumgaus != 0:
+        gaus /= sumgaus
 
-    m = (shape[0]-1)/2
-    n = (shape[1]-1)/2
-
-    y, x = np.ogrid[-m:m + 1, -n:n + 1]
-    gaus = np.exp(-(x * x + y * y) / (2. * sigma * sigma))
-    sum = gaus.sum();
-    gaus /= sum
     return gaus
 
-
 def my_filtering(img, kernel, boundary = 0):
-    '''
-    :param img: Gaussian filtering을 적용 할 이미지
-    :param kernel: 이미지에 적용 할 Gaussian Kernel
-    :param boundary: 경계 처리에 대한 parameter (0 : zero-padding, default, 1: repetition, 2:mirroring)
-    :return: 입력된 Kernel로 gaussian filtering이 된 이미지.
-    '''
     row, col = len(img), len(img[0])
     ksizeY, ksizeX = kernel.shape[0], kernel.shape[1]
 
-    pad_image = my_padding(img, (ksizeY, ksizeX), boundary = boundary) # 경계가 padding된 이미지 생성.
-    filtered_img = np.zeros((row,col), dtype = np.float32)
-    m, n  = (ksizeX - 1) / 2 , (ksizeY - 1) / 2
+    pad_image = my_padding(img, (ksizeY, ksizeX), boundary=boundary)
+    filtered_img = np.zeros((row, col), dtype=np.float32)  # 음수, 소수점 등의 처리를 위해 float으로 선언.
     for i in range(row):
         for j in range(col):
-            A = pad_image[i:i+ksizeY,j:j+ksizeX]
-
-            filtered_img[i][j] = (kernel*A).sum()
-
+            filtered_img[i, j] = np.sum(np.multiply(pad_image[i:i + ksizeY, j:j + ksizeX], kernel))
     return filtered_img
-
-src = cv2.imread('./img.jpg', 0)
-gaus2D = my_getGKernel((51,51), 13)
-gaus1D = my_getGKernel((1,51), 13)
-
-start = time.perf_counter() # 시간 측정
-img2D = my_filtering(src, gaus2D, boundary = 2)
-end = time.perf_counter()
-print("2D:", end-start)
-
-start = time.perf_counter()
-img1D = my_filtering(src, gaus1D, boundary = 2)
-img1D = my_filtering(img1D, gaus1D.T,  boundary = 2)
-end = time.perf_counter()
-print("1D:", end-start)
-
-cv2.imshow('img1D', img1D.astype(np.uint8))
-cv2.imshow('img2D', img2D.astype(np.uint8))
-cv2.waitKey()
-cv2.destroyAllWindows()
