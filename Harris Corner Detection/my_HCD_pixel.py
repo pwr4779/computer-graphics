@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from my_edgeDetector import my_DoG
 
-#get_eig 함수는 참고용으로만 사용. 과제에는 사용하지 마세요. ( np.linalg.eigvals(M) 은 사용)
+#get_eig 함수 (np.linalg.eigvals(M) 은 사용)
 def get_eig(src, target, blockSize, ksize, sigma1, sigma2 ):
     '''
     :param src: 원본 이미지
@@ -20,7 +20,7 @@ def get_eig(src, target, blockSize, ksize, sigma1, sigma2 ):
     roi = src[y-offset:y+offset+1, x-offset:x+offset+1]
 
     #DoG - DoG 사용시, 고유값이 매우 작게 나옵니다.
-    #thresholding 작업을 하는데는 지장이 없으니, 참조해주세요.
+    #thresholding
     #gradX = my_DoG(roi, ksize, sigma1, gx=1, boundary = 2)
     #gradY = my_DoG(roi, ksize, sigma1, gx=0, boundary = 2)
 
@@ -29,7 +29,7 @@ def get_eig(src, target, blockSize, ksize, sigma1, sigma2 ):
     gradY = cv2.Sobel(roi, cv2.CV_32F, dx = 0, dy = 1, ksize = ksize)
 
 
-    #Gaussian filtering - 여러분은 내장 함수 쓰세요...
+    #Gaussian filtering
     m = blockSize // 2
     r, c = np.ogrid[-m:m + 1, -m:m + 1]
     gaus = np.exp(-(c * c + r * r) / (2. * sigma2 * sigma2))
@@ -45,7 +45,7 @@ def get_eig(src, target, blockSize, ksize, sigma1, sigma2 ):
 
     M = np.array([[IxIx, IxIy],
                   [IxIy, IyIy]]) #Cov mat.
-    #print((y,x),"\n M : ",M)   #Cov mat를 확인하고 싶은 경우 주석을 푸세요.
+    #print((y,x),"\n M : ",M)
     lam = np.linalg.eigvals(M) #고유 값을 계산해 반환.
 
     return lam
@@ -120,7 +120,7 @@ cv2.waitKey()
 cv2.destroyAllWindows()
 
 '''
-#시간이 오래걸리지 않게, Corner, edge, flat한 세 지점에 대해 고유값 계산
+#Corner, edge, flat한 세 지점에 대해 고유값 계산
 #상단 부분을 주석처리하고, 이 부분을 실행하면 세 지점에 대한 연산만 수행.
 target = [(84, 293), (241,33), (10,20)]
 name = ['corner', 'edge', 'flat']

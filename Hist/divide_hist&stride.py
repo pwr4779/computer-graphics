@@ -11,7 +11,6 @@ def my_divHist(fr):
     div = 3 # 3x3 분할
     divY, divX = y // div, x // div # 3등분 된 offset 계산.
     hist = []
-    # cell 단위의 histogram을 계산하기 위해 필요한 작업 및 계산을 수행하세요.
     for i in range(div):
         for j in range(div):
             cell = fr[i*divY:i*divY+divY, j*divX:j*divX+divX]
@@ -26,7 +25,6 @@ def my_divHist(fr):
             hist_r = np.bincount(r1D, minlength=8)
             hist_cell = np.concatenate((hist_b, hist_g, hist_r), axis=0)
             hist = np.concatenate((hist,hist_cell), axis=0)
-    # 여기까지
     return hist
 
 #주변을 탐색해, 최단 거리를 가진 src의 영역을 return
@@ -59,7 +57,6 @@ def get_minDist(src, target, start):
             if(min>dH):
                 min = dH
                 coord = (j, i, j+tx, i+ty)
-    # 여기까지 (my_hist, my_divHist 자유롭게 사용하되 둘다 기능을 정상적으로 수행해야함.)
     return coord
 
 # Mouse Event를 setting 하는 영역
@@ -119,7 +116,7 @@ while True:
         fr_roi = frame[y1:y2, x1:x2]
 
     cv2.imshow('tracking', frame)
-    key = cv2.waitKey(50)  # 지연시간 100ms
+    key = cv2.waitKey(50)  # 지연시간 50ms
     if key == ord('c'):  # c를 입력하면 종료.
         break
 

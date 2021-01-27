@@ -37,10 +37,9 @@ def my_HCD(src, method, blockSize, ksize, sigma1, sigma2 , k):
 
     R = np.zeros(src.shape)  # Corner response를 받을 matrix 미리 생성
 
-    #DoG. 배포해 드린 파일의 함수를 사용하세요.
     DOGX = my_DoG(src, ksize,   sigma1, 1,  2);
     DOGY = my_DoG(src, ksize,  sigma1, 0,  2);
-    #Sobel. cv2.Sobel 함수 이용하시면 됩니다.
+    #Sobel. cv2.Sobel
     SobelX = cv2.Sobel(src, cv2.CV_32F, 1, 0, ksize);
     SobelY = cv2.Sobel(src, cv2.CV_32F, 0, 1, ksize);
     #Covariance matrix 계산

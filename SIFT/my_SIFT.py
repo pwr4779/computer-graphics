@@ -51,7 +51,7 @@ def SIFT(src, thresh, r):
     lv3sigma = np.array([s * (k**6) , s * (k**7), s * (k**8), s * (k**9), s * (k**10), s * (k**11) ]) #half size image #start : 4 * sigma
     lv4sigma = np.array([s * (k**9) , s * (k**10), s * (k**11), s * (k**12), s * (k**13), s * (k**14) ]) #quater size image #start : 8 * sigma
 
-    #image resize 원본의 2배로 이미지를 resize 해주세요. cv2.INTER_LINEAR, cv2.INTER_NEAREST 자유롭게 사용.
+    #image resize 원본의 2배로 이미지를 resize
     doubled =  cv2.resize(src, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
     normal = src
     half = cv2.resize(src, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
@@ -76,9 +76,7 @@ def SIFT(src, thresh, r):
         lv3py[:,:,i] =  cv2.resize(cv2.GaussianBlur(doubled, (ksize,ksize), lv3sigma[i]),None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
         ksize = 2 * int(4 * lv4sigma[i] + 0.5) + 1
         lv4py[:,:,i] =  cv2.resize(cv2.GaussianBlur(doubled, (ksize,ksize), lv4sigma[i]),None, fx=1/8, fy=1/8, interpolation=cv2.INTER_LINEAR)
-
-        #Gaussian Pyramids를 만들어주세요.
-        #예제에서는 한 Level(Octave)에 6개의 Gaussian Image가 저장됩니다.
+        #Level(Octave)에 6개의 Gaussian Image
 
     #DoG 피라미드를 저장할 3차원 배열
     DoGlv1 = np.zeros((doubled.shape[0], doubled.shape[1], 5))
@@ -90,7 +88,7 @@ def SIFT(src, thresh, r):
 
     # DoG를 계산
     for i in range(5):
-        #Difference of Gaussian Image pyramids 를 구해주세요.
+        #Difference of Gaussian Image pyramids
         DoGlv1[:,:,i] = lv1py[:,:,i] - lv1py[:,:,i+1]
         DoGlv2[:,:,i] = lv2py[:,:,i] - lv2py[:,:,i+1]
         DoGlv3[:,:,i] = lv3py[:,:,i] - lv3py[:,:,i+1]
@@ -124,7 +122,7 @@ def SIFT(src, thresh, r):
                 if(extPy1[j,k,i] == 1):
                     keypoints[count] = [j/2,k/2, lv1sigma[i+1]]
                     count += 1
-                #Keypoints 배열에 Keypoint의 정보를 저장하세요. 함수로 만들어서 수행하셔도 됩니다.
+                #Keypoints 배열에 Keypoint의 정보 저장
 
     for i in range(3):
         for j in range(normal.shape[0]):
@@ -133,7 +131,7 @@ def SIFT(src, thresh, r):
                 if (extPy2[j, k, i] == 1):
                     keypoints[count] =  [j,k, lv2sigma[i+1]]
                     count += 1
-                #Keypoints 배열에 Keypoint의 정보를 저장하세요.
+                #Keypoints 배열에 Keypoint의 정보를 저장
     for i in range(3):
         for j in range(half.shape[0]):
             for k in range(half.shape[1]):
@@ -141,7 +139,7 @@ def SIFT(src, thresh, r):
                 if (extPy3[j, k, i] == 1):
                     keypoints[count] = [j*2,k*2, lv3sigma[i+1]]
                     count += 1
-                #Keypoints 배열에 Keypoint의 정보를 저장하세요.
+                #Keypoints 배열에 Keypoint의 정보를 저장
     for i in range(3):
         for j in range(quarter.shape[0]):
             for k in range(quarter.shape[1]):
@@ -149,12 +147,12 @@ def SIFT(src, thresh, r):
                 if (extPy4[j, k, i] == 1):
                     keypoints[count] = [j*4,k*4, lv4sigma[i+1]]
                     count += 1
-                #Keypoints 배열에 Keypoint의 정보를 저장하세요.
+                #Keypoints 배열에 Keypoint의 정보를 저장
 
     return keypoints
 
 if __name__ == '__main__':
-    src = cv2.imread('.\\building.jpg')
+    src = cv2.imread('building.jpg')
     gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
     gray = gray.astype(np.double)
     gray /= 255.
@@ -167,7 +165,7 @@ if __name__ == '__main__':
     for i in range(len(keypoints)):
         cv2.circle(src, (int(keypoints[i,1]), int(keypoints[i,0])), int(1 * keypoints[i,2]), (0, 0, 255), 1)  # 해당 위치에 원을 그려주는 함수
 
-    src2 = cv2.imread('.\\building_temp.jpg')
+    src2 = cv2.imread('building_temp.jpg')
     gray2 = cv2.cvtColor(src2, cv2.COLOR_BGR2GRAY)
     gray2 = gray2.astype(np.double) / 255.
 

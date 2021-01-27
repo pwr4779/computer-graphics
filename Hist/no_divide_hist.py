@@ -53,7 +53,6 @@ def get_minDist(src, target, start):
             if(min>dH):
                 min = dH
                 coord = (j, i, j+tx, i+ty)
-    # 여기까지 (my_hist, my_divHist 자유롭게 사용하되 둘다 기능을 정상적으로 수행해야함.)
     return coord
 
 # Mouse Event를 setting 하는 영역
@@ -113,7 +112,7 @@ while True:
         fr_roi = frame[y1:y2, x1:x2]
 
     cv2.imshow('tracking', frame)
-    key = cv2.waitKey(50)  # 지연시간 100ms
+    key = cv2.waitKey(50)  # 지연시간 50ms
     if key == ord('c'):  # c를 입력하면 종료.
         break
 
