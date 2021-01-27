@@ -29,27 +29,6 @@ def my_divHist(fr):
     # 여기까지
     return hist
 
-#color histogram 생성.
-def my_hist(fr):
-    '''
-    :param fr: histogram을 구하고자 하는 대상 영역
-    :return: fr의 color histogram
-    '''
-    # Histogram을 계산해 주세요.
-    b = fr[:,:,0]
-    g = fr[:,:,1]
-    r = fr[:,:,2]
-    b1D = b.flatten()//32
-    g1D = g.flatten()//32
-    r1D = b.flatten()//32
-
-    hist_b = np.bincount(b1D, minlength=8)
-    hist_g = np.bincount(g1D, minlength=8)
-    hist_r = np.bincount(r1D, minlength=8)
-
-    hist = np.concatenate((hist_b,hist_g,hist_r),axis = 0)
-    return hist
-
 #주변을 탐색해, 최단 거리를 가진 src의 영역을 return
 def get_minDist(src, target, start):
     '''
@@ -67,14 +46,14 @@ def get_minDist(src, target, start):
 
     # histogram을 계산하고, 각 histogram간 거리를 계산.
     # 거리가 최소가 되는 지점의 좌표 4개를 coord에 저장한다.
-    H1 = my_hist(target)                                         #patch 전체일 경우
-    #H1 = my_divHist(target)                                    #patch 9분할일 경우
+    # H1 = my_hist(target)                                         #patch 전체일 경우
+    H1 = my_divHist(target)                                    #patch 9분할일 경우
 
-    for i in range(offset_y-20, offset_y+20):
-        for j in range(offset_x-20, offset_x+20):               #이전 frame에서 object가 검출된 위치를 기준으로 상,하,좌,우 20pixel 폭만 검사.
+    for i in range(offset_y-20, offset_y+20,5):
+        for j in range(offset_x-20, offset_x+20,5):               #이전 frame에서 object가 검출된 위치를 기준으로 상,하,좌,우 20pixel 폭만 검사.
             neighborpatch = src[i:i+ty, j:j+tx]
-            H2 = my_hist(neighborpatch)                         #patch 전체일 경우
-            #H2 = my_divHist(neighborpatch)                     #patch 9분할일 경우
+            # H2 = my_hist(neighborpatch)                         #patch 전체일 경우
+            H2 = my_divHist(neighborpatch)                     #patch 9분할일 경우
             # dH = sum((x - y) ** 2 / (x + y) for x, y in zip(H1, H2) if x + y != 0)
             dH = sum((H1-H2)**2/(H1+H2+0.0000001))
             if(min>dH):
