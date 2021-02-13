@@ -1,3 +1,4 @@
+import time
 import cv2
 import numpy as np
 from my_edgeDetector import my_DoG
@@ -91,6 +92,7 @@ def get_R(src, blockSize, ksize, sigma1, sigma2, k, method):
 
     return R
 
+start = time.time()  #성능 측정 start
 
 src = cv2.imread('./building.jpg')
 gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
@@ -109,6 +111,8 @@ R = get_R(gray, blockSize, ksize, sigma1, sigma2, k, method)
 thresh = 0.01
 R[R < thresh * R.max()] = 0
 R = find_localMax(R, blockSize)
+
+print("time :", time.time() - start)  #성능 측정 end
 
 ordY, ordX = np.where(R!=0) #R이 0이아닌 좌표를 Return
 for i in range(len(ordX)):

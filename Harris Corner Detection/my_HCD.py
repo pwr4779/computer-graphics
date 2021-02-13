@@ -1,3 +1,4 @@
+import time
 import cv2
 import numpy as np
 from my_edgeDetector import my_DoG
@@ -43,12 +44,12 @@ def my_HCD(src, method, blockSize, ksize, sigma1, sigma2 , k):
     SobelX = cv2.Sobel(src, cv2.CV_32F, 1, 0, ksize);
     SobelY = cv2.Sobel(src, cv2.CV_32F, 0, 1, ksize);
     #Covariance matrix 계산
-    IxIx = cv2.GaussianBlur(DOGX*DOGX, (blockSize, blockSize), sigma2);
-    IyIy = cv2.GaussianBlur(DOGY*DOGY, (blockSize, blockSize), sigma2);
-    IxIy = cv2.GaussianBlur(DOGX*DOGY, (blockSize, blockSize), sigma2);
-    #IxIx = cv2.GaussianBlur(SobelX * SobelX, (blockSize, blockSize), sigma2);
-    #IyIy = cv2.GaussianBlur(SobelY * SobelY, (blockSize, blockSize), sigma2);
-    #IxIy = cv2.GaussianBlur(SobelX * SobelY, (blockSize, blockSize), sigma2);
+    # IxIx = cv2.GaussianBlur(DOGX*DOGX, (blockSize, blockSize), sigma2);
+    # IyIy = cv2.GaussianBlur(DOGY*DOGY, (blockSize, blockSize), sigma2);
+    # IxIy = cv2.GaussianBlur(DOGX*DOGY, (blockSize, blockSize), sigma2);
+    IxIx = cv2.GaussianBlur(SobelX * SobelX, (blockSize, blockSize), sigma2);
+    IyIy = cv2.GaussianBlur(SobelY * SobelY, (blockSize, blockSize), sigma2);
+    IxIy = cv2.GaussianBlur(SobelX * SobelY, (blockSize, blockSize), sigma2);
 
     # harris 방법
     if method == "HARRIS":
@@ -66,6 +67,8 @@ def my_HCD(src, method, blockSize, ksize, sigma1, sigma2 , k):
                 R[i,j] = min;
     return R
 
+
+start = time.time()  #성능 측정 start
 
 src = cv2.imread('./building.jpg')
 gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
@@ -85,10 +88,13 @@ thresh = 0.01
 R[R < thresh * R.max()] = 0 #thresholding
 R = find_localMax(R, blockSize)
 
+print("time :", time.time() - start)  #성능 측정 end
+
 # Corner 위치에 원을 그려주는 코드
 ordY, ordX = np.where(R!=0) #R이 0이아닌 좌표를 Return
 for i in range(len(ordX)):
     cv2.circle(src, (ordX[i], ordY[i]), 2, (0,0,255), -1)
+
 
 cv2.imshow('src', src)
 cv2.imshow('gray', gray)
