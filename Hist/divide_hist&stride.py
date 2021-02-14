@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 def my_divHist(fr):
     '''
@@ -17,9 +18,9 @@ def my_divHist(fr):
             b = cell[:, :, 0]
             g = cell[:, :, 1]
             r = cell[:, :, 2]
-            b1D = b.flatten() // 32
+            b1D = b.flatten() // 32 # 256을 32로 나눠 주면 각 몫이 0~8로 정규화 됨
             g1D = g.flatten() // 32
-            r1D = b.flatten() // 32
+            r1D = r.flatten() // 32
             hist_b = np.bincount(b1D, minlength=8)
             hist_g = np.bincount(g1D, minlength=8)
             hist_r = np.bincount(r1D, minlength=8)
@@ -95,8 +96,13 @@ if not cap.isOpened():
 h, w = (int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)))
 fr_roi = None
 
+prevTime = 0
+
 while True:
     ret, frame = cap.read()
+
+    curTime = time.time()
+
     if not ret:
         break
 
@@ -114,6 +120,12 @@ while True:
         x1, y1, x2, y2 = roi
         start = (y1, x1)
         fr_roi = frame[y1:y2, x1:x2]
+
+    sec = curTime - prevTime
+    prevTime = curTime
+    fps = 1 / (sec)
+    str = "FPS : %0.1f" % fps
+    cv2.putText(frame, str, (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, bottomLeftOrigin=False)
 
     cv2.imshow('tracking', frame)
     key = cv2.waitKey(50)  # 지연시간 50ms
