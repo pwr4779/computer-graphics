@@ -6,13 +6,13 @@ def get_extrema(DoG, ext,r):
     for i in range(1, 4):
         for j in range(1, DoG.shape[0]-1):
             for k in range(1, DoG.shape[1]-1):
-                # 최대값 혹은 최소값인 지점을 extrema로 구해주세요.
+                # 최대값 혹은 최소값인 지점을 extrema 구하기
                 Local = [DoG[j-1:j+2,k-1:k+2,i-1],DoG[j-1:j+2,k-1:k+2,i],DoG[j-1:j+2,k-1:k+2,i+1]]
                 max = np.max(Local)
                 min = np.min(Local)
 
                 if (max == DoG[j,k,i] or min == DoG[j,k,i]):
-                    # xhat과 D(xhat)을 구하기 위한 미분을 수행해주세요.\
+                    # xhat과 D(xhat)을 구하기 위한 미분을 수행
                     dD = np.array([[(DoG[j, k + 1, i] - DoG[j, k - 1, i]) / 2], [(DoG[j + 1, k, i] - DoG[j - 1, k, i]) / 2],[(DoG[j, k, i + 1] - DoG[j, k, i - 1]) / 2]])
                     H = np.zeros((3, 3))
 
@@ -28,7 +28,7 @@ def get_extrema(DoG, ext,r):
                     target = DoG[j,k,i]
                     xhat = np.linalg.lstsq(-H, dD, rcond=-1)[0]
                     Dxhat = target + 0.5 * np.dot(dD.transpose(), xhat)
-                    # Thresholding을 수행해주세요. ( 적절한 위치만 ext 배열에 저장해주세요, )
+                    # Thresholding을 수행
                     threshold = 0.03
                     if(np.abs(Dxhat)<threshold):
                         continue
@@ -44,8 +44,9 @@ def get_extrema(DoG, ext,r):
 def SIFT(src, thresh, r):
     s =  1.6 #초기 sigma
     a = 3.           #극점을 찾을 이미지 수
-    k = 2. ** (1/a) # scale step
+    k = 2. ** (1/a) # scale step k > 1
 
+    # lv1sigma [1.6 2.01587368 2.53984168 3.2 4.03174736 5.07968337] 점점 시그마 값이 커짐 - blur 효과가 강해짐.
     lv1sigma = np.array([s , s * k, s * (k**2), s * (k**3), s * (k**4), s * (k**5)]) #double image에 적용될 sigma.
     lv2sigma = np.array([s * (k**3) , s * (k**4), s * (k**5), s * (k**6), s * (k**7), s * (k**8) ]) #Original size image #start : 2 * sigma
     lv3sigma = np.array([s * (k**6) , s * (k**7), s * (k**8), s * (k**9), s * (k**10), s * (k**11) ]) #half size image #start : 4 * sigma

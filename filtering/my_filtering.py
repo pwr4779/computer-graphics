@@ -66,3 +66,24 @@ def my_filtering(img, kernel, boundary = 0):
         for j in range(col):
             filtered_img[i, j] = np.sum(np.multiply(pad_image[i:i + ksizeY, j:j + ksizeX], kernel))
     return filtered_img
+
+src = cv2.imread('./img.jpg', 0)
+gaus2D = my_getGKernel((101,101), 6)
+gaus1D = my_getGKernel((1,101), 6)
+
+start = time.perf_counter() # 시간 측정
+img2D = my_filtering(src, gaus2D, boundary = 0)
+end = time.perf_counter()
+print("2D:", end-start)
+
+start = time.perf_counter()
+img1D = my_filtering(src, gaus1D, boundary = 0)
+img1D = my_filtering(img1D, gaus1D.T,  boundary = 0)
+end = time.perf_counter()
+print("1D:", end-start)
+
+cv2.imshow('src', src.astype(np.uint8))
+cv2.imshow('img1D', img1D.astype(np.uint8))
+cv2.imshow('img2D', img2D.astype(np.uint8))
+cv2.waitKey()
+cv2.destroyAllWindows()
